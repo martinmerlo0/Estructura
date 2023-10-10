@@ -105,10 +105,12 @@ public class ArraySorter {
    * @param array el arreglo de los elementos a ordenar, no puede ser {@code null}
    */
    public static <T extends Comparable<? super T>> void mergeSort(T[] array,int begin,int end) {
-       int mitad = (begin + end) / 2;
-       mergeSort(array, begin, mitad);
-       mergeSort(array, mitad+1, end);
-       merge(array,begin,mitad,end);
+         if (begin < end) {
+        int mitad = (begin + end) / 2;
+        mergeSort(array, begin, mitad);
+        mergeSort(array, mitad + 1, end);
+        merge(array, begin, mitad, end);
+    }
    }
 
    public static <T extends Comparable<? super T>> void merge(T[] array, int begin, int mitad, int end){
@@ -122,7 +124,7 @@ public class ArraySorter {
          izq[i] = array[begin +i];
       }
 
-      for(int j = 0; i < n2 ; j++){
+      for(int j = 0; j < n2 ; j++){
          der[j] = array[mitad + 1 +j];
       }
 
@@ -133,7 +135,7 @@ public class ArraySorter {
 
       while(i < n1 && j < n2){
 
-         if(izq[i] < der[j]){
+         if(izq[i].compareTo(der[j]) < 0){
             array[k] = izq[i];
             i++;
          }else{
@@ -144,9 +146,19 @@ public class ArraySorter {
 
       }
 
+      while (i < n1) {
+         array[k] = izq[i];
+         i++;
+         k++;
+  }
+  
+      while (j < n2) {
+         array[k] = der[j];
+         j++;
+         k++;
+  }
 
 
-git
 
 
 

@@ -19,6 +19,11 @@ public class Main {
       ArraySorter.quickSort(arreglo2, 0, 9);
       System.out.println("Arreglo ordenado con Quicksort:\n" + Arrays.toString(arreglo2));
 
+
+    System.out.println("Arreglo random, tamaño 10 y valores entre 0 y 100:\n" + Arrays.toString(arreglo));
+        ArraySorter.mergeSort(arreglo,0,9);
+    System.out.println("Arreglo ordenado con MergeSort:\n" + Arrays.toString(arreglo));
+
       //System.out.println("Arreglo random, tamaño 10 y valores entre 0 y 100:\n" + Arrays.toString(arreglo));
       //ArraySorter.bubbleSort(arreglo);
      // System.out.println("Arreglo ordenado con BubbleSort:\n" + Arrays.toString(arreglo));
