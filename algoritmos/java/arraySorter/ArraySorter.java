@@ -104,11 +104,53 @@ public class ArraySorter {
    * @param <T> el tipo de los elementos del arreglo, los cuales deben ser comparables entre sí
    * @param array el arreglo de los elementos a ordenar, no puede ser {@code null}
    */
-   public static <T extends Comparable<? super T>> void mergeSort(T[] array) {
-      throw new UnsupportedOperationException("TODO: implementar");    
+   public static <T extends Comparable<? super T>> void mergeSort(T[] array,int begin,int end) {
+       int mitad = (begin + end) / 2;
+       mergeSort(array, begin, mitad);
+       mergeSort(array, mitad+1, end);
+       merge(array,begin,mitad,end);
    }
 
+   public static <T extends Comparable<? super T>> void merge(T[] array, int begin, int mitad, int end){
+      int n1 = mitad - begin +1 ;
+      int n2 = end - mitad;
 
+      T[] izq = (T[]) new Object[n1];
+      T[] der = (T[]) new Object[n2];
+
+      for(int i = 0; i < n1; i++){
+         izq[i] = array[begin +i];
+      }
+
+      for(int j = 0; i < n2 ; j++){
+         der[j] = array[mitad + 1 +j];
+      }
+
+      int i = 0;
+      int j = 0;
+
+      int k = begin; 
+
+      while(i < n1 && j < n2){
+
+         if(izq[i] < der[j]){
+            array[k] = izq[i];
+            i++;
+         }else{
+            array[k] = der[j];
+            j++;
+         }
+         k++;
+
+      }
+
+
+
+
+
+
+      
+   }
    /* (non-Javadoc)
    * Este método intercambia dos posiciones de un arreglo.
    */ 
@@ -133,3 +175,4 @@ public class ArraySorter {
 
 
 }
+
