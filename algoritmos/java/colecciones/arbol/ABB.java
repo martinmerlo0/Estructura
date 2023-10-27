@@ -2,6 +2,7 @@ package colecciones.arbol;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.LinkedList;
 
 /**
@@ -9,7 +10,7 @@ import java.util.LinkedList;
  * @param <T> Tipo del valor asociado a los nodos del árbol, debe ser posible definir un orden total para los mismos.
  * @see NodoBinario
  */
-public class ABB<T> implements Diccionario<T> {
+public class ABB<T extends Comparable<T>> implements Diccionario<T> {
 
     private NodoBinario<T> raiz;
 
@@ -33,7 +34,8 @@ public class ABB<T> implements Diccionario<T> {
      * @param valor de la raiz del nuevo arbol si no es null.
      */
     public ABB(Comparator<? super T> comparador, T valor) {
-        throw new UnsupportedOperationException("TODO: implementar");
+        this.comparador = comparador;
+        this.raiz = new NodoBinario<ABB.T>(valor);
     }
 
 
@@ -42,15 +44,57 @@ public class ABB<T> implements Diccionario<T> {
      */
     @Override
     public void insertar(T elem) {
-        throw new UnsupportedOperationException("TODO: implementar");
+
+        raiz = insertarRecursivamente(raiz, elem);
+
+    }
+
+    private NodoBinario<T> insertarRecursivamente(NodoBinario<T> nodo,T elem){
+
+        if(nodo == null){
+            nodo = new NodoBinario<ABB.T>(elem); // caso arbol vacio
+        }
+
+        if(elem.compareTo(nodo.getValor()) < 0 ){ // elem es menor que el nodo actual
+            nodo.setDerecho(insertarRecursivamente(nodo.getIzquierdo(), elem));
+        }else{
+            nodo.setIzquierdo(insertarRecursivamente(nodo.getDerecho(), elem));
+        }
+
+
+        return nodo;
+
     }
 
 
     /**
      * {@inheritDoc}
      */
+
+
+    private boolean buscarRecursivamente(NodoBinario<T> nodo, T elem){
+        if(nodo == null){
+            return false ;
+        }
+
+        if(elem.compareTo(nodo.getValor()) == 0){
+            return true;
+        }
+
+
+        if(elem.compareTo(nodo.getValor()) < 0){ // elem es menor al nodo 
+            return buscarRecursivamente(nodo.getIzquierdo(), elem);
+        }else{
+            return buscarRecursivamente(nodo.getDerecho(), elem);
+        }
+
+        
+
+
+    }
     public boolean pertenece(T elem) {
-        throw new UnsupportedOperationException("TODO: implementar");
+        return buscarRecursivamente(raiz,elem);
+    
     }
 
 
@@ -59,9 +103,46 @@ public class ABB<T> implements Diccionario<T> {
      */
     @Override
     public void borrar(T elem) {
-        throw new UnsupportedOperationException("TODO: implementar");
+        raiz = borrarRecursivamente(raiz, elem);
     }
-
+    
+    private NodoBinario<T> borrarRecursivamente(NodoBinario<T> nodo, T elem) {
+        if (nodo == null) {
+            // Caso base: El elemento no se encuentra en el árbol.
+            return nodo;
+        }
+    
+        if (elem.compareTo(nodo.getValor()) < 0) {
+            // Si el elemento es menor, buscar en el subárbol izquierdo.
+            nodo.setIzquierdo(borrarRecursivamente(nodo.getIzquierdo(), elem));
+        } else if (elem.compareTo(nodo.getValor()) > 0) {
+            // Si el elemento es mayor, buscar en el subárbol derecho.
+            nodo.setDerecho(borrarRecursivamente(nodo.getDerecho(), elem));
+        } else {
+            // Encontramos el elemento a borrar.
+    
+            // Caso 1: Nodo con un hijo o sin hijos.
+            if (nodo.getIzquierdo() == null) {
+                return nodo.getDerecho();
+            } else if (nodo.getDerecho() == null) {
+                return nodo.getIzquierdo();
+            }
+    
+            // Caso 2: Nodo con dos hijos.
+            nodo.setValor(encontrarMinimo(nodo.getDerecho()).getValor());
+            nodo.setDerecho(borrarRecursivamente(nodo.getDerecho(), nodo.getValor()));
+        }
+    
+        return nodo;
+    }
+    
+    private NodoBinario<T> encontrarMinimo(NodoBinario<T> nodo) {
+        NodoBinario<T> actual = nodo;
+        while (actual.getIzquierdo() != null) {
+            actual = actual.getIzquierdo();
+        }
+        return actual;
+    }
 
     /**
      * {@inheritDoc}
@@ -76,7 +157,7 @@ public class ABB<T> implements Diccionario<T> {
      */
     @Override
     public T raiz() {
-        throw new UnsupportedOperationException("TODO: implementar");
+        return raiz.getValor();
     }
 
     /**
@@ -84,7 +165,14 @@ public class ABB<T> implements Diccionario<T> {
      */
     @Override
     public Diccionario<T> subArbolIzquierdo() {
-        throw new UnsupportedOperationException("TODO: implementar");
+        if(raiz != null && raiz.getIzquierdo() != null){
+            ABB subArbolIzq = new ABB<>(comparador);
+            subArbolIzq.raiz = raiz.getIzquierdo();
+            return subArbolIzq;
+        }else{
+            return new ABB<>(comparador);
+        }
+
     }
 
     /**
@@ -92,7 +180,13 @@ public class ABB<T> implements Diccionario<T> {
      */
     @Override
     public Diccionario<T> subArbolDerecho() {
-        throw new UnsupportedOperationException("TODO: implementar");
+        if(raiz != null && raiz.getDerecho() != null){
+            ABB subArbolDer = new ABB<>(comparador);
+            subArbolDer.raiz = raiz.getDerecho();
+            return subArbolDer;
+        }else{
+            return new ABB<>(comparador);
+        }
     }
 
     /**
@@ -100,30 +194,64 @@ public class ABB<T> implements Diccionario<T> {
      */
     @Override
     public int elementos() {
-        throw new UnsupportedOperationException("TODO: implementar");
+        return contarNodos(raiz);
     }
 
+    private int contarNodos(NodoBinario<T> nodo){
+        if(nodo == null){
+            return 0 ;
+        }else{
+            return 1 + contarNodos(nodo.getIzquierdo()) + contarNodos(nodo.getDerecho());
+        }
+    }
     /**
      * {@inheritDoc}
      */
+
     @Override
     public int altura() {
-        throw new UnsupportedOperationException("TODO: implementar");
+        return calcularAltura(raiz);
     }
 
+    private int calcularAltura(NodoBinario<T> nodo){
+        if(nodo == null){
+            return 0;
+        }
+
+        int alturaIzq = calcularAltura(nodo.getIzquierdo());
+        int alturaDer = calcularAltura(nodo.getDerecho());
+
+        return 1 + Math.max(alturaIzq, alturaDer);
+
+    }
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean esVacio() {
-        throw new UnsupportedOperationException("TODO: implementar");
+        return raiz == null;
     }
 
     /**
      * {@inheritDoc}
      */
+
+    
     public T mayorValor(){
-        throw new UnsupportedOperationException("TODO: implementar");
+        if(raiz == null){
+            throw new NoSuchElementException("El árbol está vacío, no hay un mayor valor.");
+        }else{
+
+            NodoBinario actual = raiz ;
+
+            while (actual.getDerecho() != null){
+                actual = actual.getDerecho();
+            }
+
+            return actual.getValor();
+
+
+        }
     }
 
     /**
@@ -131,7 +259,20 @@ public class ABB<T> implements Diccionario<T> {
      */
     @Override
     public T menorValor() {
-        throw new UnsupportedOperationException("TODO: implementar");
+        if(raiz == null){
+            throw new NoSuchElementException("El árbol está vacío, no hay un menor valor.");
+        }else{
+
+            NodoBinario actual = raiz ;
+
+            while (actual.getIzquierdo() != null){
+                actual = actual.getIzquierdo();
+            }
+
+            return actual.getValor();
+
+
+        }
     }
 
     /**
@@ -140,6 +281,17 @@ public class ABB<T> implements Diccionario<T> {
     @Override
     public T sucesor(T elem) {
         throw new UnsupportedOperationException("TODO: implementar");
+    }
+
+    private boolean encontrarNodo(NodoBinario<T> nodo){
+
+
+
+
+
+
+
+        
     }
 
     /**
