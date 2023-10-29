@@ -45,10 +45,14 @@ public class ABB<T extends Comparable<T>> implements Diccionario<T> {
     @Override
     public void insertar(T elem) {
 
-        raiz = insertarRecursivamente(raiz, elem);
+        if(!buscarRecursivamente(raiz, elem)){
+            raiz = insertarRecursivamente(raiz, elem);
+        }
+        
 
     }
 
+    
     private NodoBinario<T> insertarRecursivamente(NodoBinario<T> nodo,T elem){
 
         if(nodo == null){
@@ -280,18 +284,36 @@ public class ABB<T extends Comparable<T>> implements Diccionario<T> {
      */
     @Override
     public T sucesor(T elem) {
-        throw new UnsupportedOperationException("TODO: implementar");
+        if(raiz == null){
+            throw new NoSuchElementException("ABB vacio no existe sucesor");
+        }
+
+        NodoBinario<T> actual = encontrarNodo(raiz, elem); // le asigna el nodo donde se encontaria el elemento elem 
+        if(actual.getDerecho() == null){
+            throw new NoSuchElementException("No existe elemento sucesor a elem");
+        }else{
+            return actual.getDerecho().getValor();
+        }
     }
 
-    private boolean encontrarNodo(NodoBinario<T> nodo){
+    private NodoBinario<T> encontrarNodo(NodoBinario<T> nodo,T elem){
+        if (nodo == null){
+            return null ; // el elemento no se encuentra 
+        }
 
-
-
-
-
-
+        if(elem.compareTo(nodo.getValor()) < 0){ // se busca el elemento en el subarbol izquierdo
+            return encontrarNodo(nodo.getIzquierdo(), elem);
+        }else
+            if(elem.compareTo(nodo.getValor()) > 0){
+            return encontrarNodo(nodo.getDerecho(), elem);
+        }else{
+            return nodo; // se encontro el elemento 
+        }
 
         
+
+
+
     }
 
     /**
@@ -299,7 +321,16 @@ public class ABB<T extends Comparable<T>> implements Diccionario<T> {
      */
     @Override
     public T predecesor(T elem) {
-        throw new UnsupportedOperationException("TODO: implementar");
+         if(raiz == null){
+            throw new NoSuchElementException("ABB vacio no existe sucesor");
+        }
+
+        NodoBinario<T> actual = encontrarNodo(raiz, elem); // le asigna el nodo donde se encontaria el elemento elem 
+        if(actual.getIzquierdo() == null){
+            throw new NoSuchElementException("No existe elemento predecesor a elem");
+        }else{
+            return actual.getIzquierdo().getValor();
+        }
     }
 
     /**
