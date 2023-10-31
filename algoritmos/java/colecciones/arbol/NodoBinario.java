@@ -3,7 +3,7 @@ package colecciones.arbol;
 /**
  * Clase auxiliar para diccionarios implementados con nodos encadenados.
  */
-public class NodoBinario<T>  {
+public class NodoBinario<T extends Comparable<T>>   {
     private T valor;
     private NodoBinario<T> izquierdo;
     private NodoBinario<T> derecho;
